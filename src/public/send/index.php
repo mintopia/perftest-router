@@ -34,10 +34,11 @@ if ($data) {
         'data' => $data
     ];
 } else {
+    $data = file_get_contents($sizeFile);
     $config['multipart'] = [
         [
             'name' => 'data',
-            'contents' => fopen(__DIR__ . "/../../data/{$size}mb.blob", 'r')
+            'contents' => $data
         ]
     ];
 }
@@ -48,7 +49,7 @@ $results = (object) [
     'duration' => 0,
     'concurrency' => $concurrency,
     'size' => $size,
-    'data' => $data,
+    'data' => getInput('data'),
     'requests' => []
 ];
 
@@ -65,7 +66,7 @@ $duration = microtime(true) - $start;
 if ($duration < 0) {
     $duration = 0;
 }
-$results->duration = $duration * 1000;
+$results->duration = round($duration * 1000);
 
 foreach ($responses as $response) {
     if ($response instanceof \Throwable) {
